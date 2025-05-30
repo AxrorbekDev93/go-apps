@@ -1,22 +1,38 @@
-package db
+package main
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
+	"net/http"
+	"os"
 
-	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/lib/pq"
 )
 
-var DB *sql.DB
+func main() {
+	dbURL := os.Getenv("DATABASE_URL")
 
-func Connect() {
-	var err error
-	DB, err = sql.Open("mysql", "root:@tcp(127.0.0.1:3306)/newlabsgo?parseTime=true")
+	db, err := sql.Open("postgres", dbURL)
 	if err != nil {
-		log.Fatal("Ошибка подключения к БД:", err)
+		log.Fatal("❌ Ошибка при подключении к базе:", err)
 	}
-	if err := DB.Ping(); err != nil {
-		log.Fatal("БД недоступна:", err)
+
+	err = db.Ping()
+	if err != nil {
+		log.Fatal("❌ База не отвечает:", err)
 	}
-	log.Println("✅ Подключено к MySQL!")
+
+	fmt.Println("✅ Успешное подключение к PostgreSQL на Render!")
+
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("🚀 Go + PostgreSQL на Render работает!"))
+	})
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	log.Println("Сервер запущен на порту " + port)
+	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
