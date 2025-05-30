@@ -1,4 +1,4 @@
-module go-api
+module github.com/AxrorbekDev93/go-apps
 
 go 1.24.0
 
