@@ -1,7 +1,6 @@
 package main
-
+import "github.com/AxrorbekDev93/go-apps/db"
 import (
-	"go-api/db"
 	"go-api/handlers"
 	"go-api/middleware"
 
